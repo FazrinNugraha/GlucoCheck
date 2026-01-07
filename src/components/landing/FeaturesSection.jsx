@@ -39,12 +39,12 @@ const FeaturesSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <div 
+            <div
               key={index}
-              className="group bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover:shadow-card transition-all duration-300 hover:-translate-y-1"
+              className="bg-[#F8FAFC] group bg-card rounded-2xl p-6 shadow-soft hover:shadow-card transition-all duration-300 hover:-translate-y-1"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:gradient-primary transition-all duration-300">
-                <feature.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-gradient-to-br group-hover:from-purple-600 transition-all duration-300">
+                <feature.icon className="w-7 h-7 text-purple-600 group-hover:text-white transition-all duration-300" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{feature.title}</h3>
               <p className="text-muted-foreground">{feature.description}</p>

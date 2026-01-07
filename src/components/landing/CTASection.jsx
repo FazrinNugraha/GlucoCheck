@@ -9,7 +9,7 @@ const CTASection = () => {
   };
 
   return (
-    <section className="py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden bg-[#f3ccff]">
       <div className="absolute inset-0 gradient-primary opacity-95" />
       <div className="absolute inset-0">
         <div className="absolute top-10 left-10 w-40 h-40 bg-primary-foreground/10 rounded-full blur-2xl" />
@@ -29,6 +29,7 @@ const CTASection = () => {
           <button
             onClick={handleCheckNow}
             className="
+              bg-white
               inline-flex items-center gap-2
               px-8 py-4
               rounded-xl

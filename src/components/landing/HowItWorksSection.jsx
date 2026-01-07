@@ -40,23 +40,22 @@ const HowItWorksSection = () => {
             Proses yang simpel untuk membantu Anda memahami kondisi kesehatan.
           </p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((item, index) => (
             <div key={index} className="relative">
               {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-10 left-[60%] w-full h-0.5 bg-border" />
+                <div className="hidden lg:block absolute top-10 left-[60%] w-full h-0.5 bg-[#b7b7b7]" />
               )}
-              
+
               <div className="relative z-10 text-center">
                 <div className="relative w-20 h-20 mx-auto mb-6">
-                  <div className="absolute inset-0 rounded-full gradient-primary opacity-20 animate-pulse-soft" />
-                  <div className="relative w-20 h-20 rounded-full bg-card border-2 border-primary flex items-center justify-center">
-                    <item.icon className="w-8 h-8 text-primary" />
+                  <div className="absolute inset-0 rounded-full bg-purple-400 opacity-20 animate-pulse-soft" />
+                  <div className="relative w-20 h-20 rounded-full bg-white border-2 border-[#e79aff] flex items-center justify-center">
+                    <item.icon className="w-8 h-8 text-[#e79aff]" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full gradient-primary flex items-center justify-center">
-                    <span className="text-primary-foreground text-xs font-bold">{item.step}</span>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[#e79aff] flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{item.step}</span>
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>

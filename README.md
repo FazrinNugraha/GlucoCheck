@@ -99,8 +99,8 @@ Tambahkan screenshot landing page atau form di sini jika diperlukan.
 
 ## 👨‍💻 Developer
 
-**Muhammad Fazrin Nugraha**
-Mahasiswa Informatika
+**Muhammad Fazrin Nugraha dan Lovable **
+
 
 ---
 

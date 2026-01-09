@@ -19,11 +19,11 @@ const CTASection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-6">
-            Mulai Perjalanan Sehat Anda Hari Ini
+            Ayo Mulai Peduli Terhadap Kesehatan Penyakit Diabetes
           </h2>
 
           <p className="text-primary-foreground/80 text-lg md:text-xl mb-10 max-w-xl mx-auto">
-            Jangan tunggu sampai terlambat. Cek risiko diabetes Anda sekarang dan ambil langkah pencegahan sedini mungkin.
+            Manfaatkan sistem analisis berbasis AI untuk memahami risiko diabetes Anda dalam hitungan menit.
           </p>
 
           <button
@@ -33,9 +33,11 @@ const CTASection = () => {
               inline-flex items-center gap-2
               px-8 py-4
               rounded-xl
-              bg-primary-foreground text-primary
               font-semibold text-lg
-              hover:bg-primary-foreground/90
+              text-
+              hover:bg-gray-50
+              hover:shadow-lg
+              hover:scale-105
               transition-all duration-300
               group
             "

@@ -13,13 +13,12 @@ const Footer = () => {
           </div>
           
           <p className="text-muted-foreground text-sm text-center md:text-left">
-            Disclaimer: GlucoCheck bersifat informatif dan bukan pengganti diagnosis medis profesional.
+            Disclaimer: GlucoCheck bersifat informatif dan Tetap utamakan konsultasi dengan dokter untuk penilaian kesehatan yang akurat.
           </p>
           
           <div className="flex items-center gap-1 text-muted-foreground text-sm">
-            <span>Dibuat dengan</span>
-            <Heart className="w-4 h-4 text-destructive fill-destructive" />
-            <span>untuk Indonesia</span>
+            <p>Muhamad Fazrin Nugraha <br />
+            Mahasiswa Informatika</p>
           </div>
         </div>
         

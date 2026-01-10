@@ -60,7 +60,7 @@ const FeaturesSection = () => {
           className="text-center max-w-2xl mx-auto mb-16"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Fitur Unggulan
+            Fitur Unggulan Kami
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-3 mb-4">
             Kenapa Memilih GlucoCheck?

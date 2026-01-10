@@ -15,13 +15,14 @@ export const analyzeHealthData = async (formData) => {
 
   const bmiCategory = getBMICategory(parseFloat(bmi));
 
-  const prompt = `Analisis data kesehatan berikut dan berikan respons HANYA dalam format JSON yang valid, tanpa teks apapun di luar JSON:
+  const prompt = `Kamu adalah dokter spesialis endokrinologi yang berpengalaman. Analisis data kesehatan pasien berikut dengan TELITI dan NATURAL (bukan template kaku):
 
-DATA PRIBADI:
-- Usia: ${formData.age} tahun
-- BMI: ${bmi} (${bmiCategory})
+DATA PASIEN:
+Nama: ${formData.name}
+Usia: ${formData.age} tahun
+BMI: ${bmi} (${bmiCategory})
 
-JAWABAN KUESIONER:
+JAWABAN KUESIONER (ANALISIS SETIAP JAWABAN):
 ${questions
     .map(
       (q, i) => `${i + 1}. ${q.question}
@@ -31,18 +32,40 @@ ${questions
 
 ${formData.additionalNotes ? `CATATAN TAMBAHAN:\n${formData.additionalNotes}` : ''}
 
-PENTING: Berikan analisis yang DETAIL dan JELAS, terutama untuk status "Waspada". Jelaskan faktor risiko yang ditemukan, dampak potensial, dan langkah-langkah konkret yang harus dilakukan.
+PANDUAN ANALISIS:
+- Q1 (Frekuensi makan): Pola makan mempengaruhi stabilitas gula darah
+- Q2 (Rasa haus): Polidipsia = gejala klasik diabetes
+- Q3 (Frekuensi BAK): Poliuria = gejala klasik diabetes
+- Q4 (Riwayat keluarga): Faktor genetik sangat penting
+- Q5 (Jam tidur): Kurang tidur → resistensi insulin
+- Q6 (Konsumsi manis): Faktor diet paling krusial
+- Q7 (Olahraga): Aktivitas fisik kurangi risiko
+- Q8 (Kelelahan): Bisa jadi tanda diabetes
+- Q9 (Riwayat gula darah): Data objektif sangat penting
+- Q10 (Gejala lain): Identifikasi komplikasi
 
-Respons HARUS dalam format JSON berikut (tanpa markdown, tanpa backticks):
+PEDOMAN STATUS:
+- RED (Perlu Perhatian): BMI >27 + gejala ATAU gula darah >126 mg/dL puasa ATAU >2 gejala diabetes ATAU gejala komplikasi
+- YELLOW (Waspada): BMI 25-27 ATAU 1-2 faktor risiko ATAU gula darah 100-125 ATAU riwayat keluarga + gaya hidup buruk
+- GREEN (Baik): BMI <25 + gaya hidup sehat + tidak ada gejala
+
+PENTING: 
+- Tulis dengan gaya PERCAKAPAN dokter yang ramah, bukan format kaku
+- Sebutkan temuan spesifik dari jawaban pasien (contoh: "Saya melihat Anda mengalami rasa haus sangat sering dan buang air kecil 10-12 kali sehari...")
+- Setiap analisis harus UNIK berdasarkan kombinasi jawaban
+- Variasikan bahasa dan struktur kalimat (jangan selalu mulai dengan "Berdasarkan...")
+- Rekomendasi harus spesifik sesuai kondisi pasien, bukan list generic
+
+Format JSON (tanpa markdown):
 {
-  "status": "string",
-  "statusColor": "string",
-  "ringkasan": "string panjang (minimal 4-5 kalimat) yang menjelaskan kondisi, faktor risiko yang teridentifikasi, dampak jika diabaikan, dan pentingnya tindakan preventif",
-  "risikoLevel": "string",
-  "rekomendasi": ["minimal 7-8 rekomendasi spesifik dan actionable"],
+  "status": "Baik/Waspada/Perlu Perhatian",
+  "statusColor": "green/yellow/red",
+  "ringkasan": "Tulisan natural 5-7 kalimat seperti dokter berbicara langsung ke pasien, sebutkan temuan spesifik dari jawaban",
+  "risikoLevel": "Rendah/Sedang/Tinggi",
+  "rekomendasi": ["8-10 saran spesifik yang DISESUAIKAN dengan jawaban pasien"],
   "urgensi": "string",
-  "dietTips": ["minimal 5-6 tips diet yang detail"],
-  "lifestyleTips": ["minimal 4-5 tips gaya hidup yang spesifik"]
+  "dietTips": ["6-8 tips diet yang relevan dengan pola makan pasien"],
+  "lifestyleTips": ["6-8 tips gaya hidup yang relevan dengan aktivitas pasien"]
 }`;
 
   try {
@@ -54,16 +77,16 @@ Respons HARUS dalam format JSON berikut (tanpa markdown, tanpa backticks):
           {
             role: 'system',
             content:
-              'Kamu adalah asisten kesehatan AI. Respons HARUS berupa JSON valid tanpa markdown atau teks tambahan. Gunakan pedoman: BMI >27 ATAU ada gejala diabetes (sering haus, sering buang air, lemas) = status "Perlu Perhatian" (red). BMI 25-27 ATAU 1-2 faktor risiko = "Waspada" (yellow). Sisanya = "Baik" (green).',
+              'Kamu dokter endokrinologi berpengalaman yang komunikatif dan empatis. Bicara seperti dokter sungguhan (natural, personal, bervariasi), BUKAN AI template. Setiap pasien unik - analisis mendalam dan berikan saran yang benar-benar disesuaikan. Gunakan bahasa yang hangat tapi tetap profesional. Response HARUS JSON valid.',
           },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        temperature: 0.3,
+        temperature: 0.7, // Naikan untuk lebih kreatif & natural
         max_tokens: 2500,
-        top_p: 0.9,
+        top_p: 0.95,
         stream: false,
         response_format: { type: 'json_object' },
       },
@@ -76,6 +99,10 @@ Respons HARUS dalam format JSON berikut (tanpa markdown, tanpa backticks):
     );
 
     const aiResponse = response.data.choices[0].message.content.trim();
+    
+    // Log raw response dari AI
+    console.log(' AI Raw Response:', aiResponse);
+    
     const cleanResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '');
     const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
     
@@ -83,19 +110,16 @@ Respons HARUS dalam format JSON berikut (tanpa markdown, tanpa backticks):
 
     const result = JSON.parse(jsonMatch[0]);
     
-    // Simple validation
     const requiredFields = ['status', 'statusColor', 'ringkasan', 'risikoLevel', 'rekomendasi', 'urgensi', 'dietTips', 'lifestyleTips'];
     const missingFields = requiredFields.filter(field => !result[field]);
     if (missingFields.length > 0) throw new Error('Incomplete response');
 
-    // Debug log - HANYA 1 LOG
-    console.log('✅ AI JALAN:', result.status);
+    console.log(' AI BERHASIL JALAN:', result.status);
 
     return result;
 
   } catch (error) {
-    // Debug log - HANYA 1 LOG
-    console.log('❌ AI ERROR - menggunakan fallback');
+    console.log(' AI ERROR - menggunakan fallback');
     
     return generateFallbackAnalysis(formData, bmi, bmiCategory);
   }
@@ -103,86 +127,233 @@ Respons HARUS dalam format JSON berikut (tanpa markdown, tanpa backticks):
 
 const generateFallbackAnalysis = (formData, bmi, bmiCategory) => {
   const bmiValue = parseFloat(bmi);
-  let riskScore = 0;
-  
-  if (bmiValue >= 30) riskScore += 3;
-  else if (bmiValue >= 27) riskScore += 2;
-  else if (bmiValue >= 25) riskScore += 1;
-  
   const answers = formData.answers;
-  const diabetesSymptoms = [
-    answers['q1'], answers['q2'], answers['q3']
-  ].filter(a => a && (a.toLowerCase().includes('sering') || a.toLowerCase().includes('ya')));
+  let riskScore = 0;
+  let findings = [];
   
-  if (diabetesSymptoms.length >= 2) riskScore += 3;
-  else if (diabetesSymptoms.length === 1) riskScore += 1;
+  // Analisis BMI
+  if (bmiValue >= 30) {
+    riskScore += 4;
+    findings.push(`BMI Anda ${bmi} termasuk obesitas`);
+  } else if (bmiValue >= 27) {
+    riskScore += 3;
+    findings.push(`BMI Anda ${bmi} cukup tinggi`);
+  } else if (bmiValue >= 25) {
+    riskScore += 1; // Hanya +1 untuk overweight ringan
+    // Tidak masuk findings jika tidak ada gejala lain
+  }
   
-  if (answers['q4']?.toLowerCase().includes('ya')) riskScore += 2;
+  // Q2: Rasa haus (HANYA hitung jika SANGAT SERING atau SERING)
+  if (answers['q2']?.includes('Sangat sering')) {
+    riskScore += 4;
+    findings.push('rasa haus yang sangat berlebihan');
+  } else if (answers['q2']?.includes('Sering')) {
+    riskScore += 2;
+    findings.push('sering merasa haus');
+  }
+  // "Jarang" atau "Tidak pernah" = 0 poin
   
-  if (answers['q5']?.toLowerCase().includes('tidak') || 
-      answers['q5']?.toLowerCase().includes('jarang')) riskScore += 1;
+  // Q3: Frekuensi BAK (HANYA hitung jika tinggi)
+  if (answers['q3']?.includes('Lebih dari 12 kali')) {
+    riskScore += 4;
+    findings.push('frekuensi buang air kecil sangat tinggi (>12x/hari)');
+  } else if (answers['q3']?.includes('10-12 kali')) {
+    riskScore += 3;
+    findings.push('sering buang air kecil (10-12x/hari)');
+  } else if (answers['q3']?.includes('7-9 kali')) {
+    riskScore += 1;
+    findings.push('frekuensi BAK sedikit tinggi');
+  }
+  // "4-6 kali (Normal)" = 0 poin
   
+  // Q4: Riwayat keluarga (tingkatkan bobot)
+  if (answers['q4']?.includes('banyak anggota')) {
+    riskScore += 3;
+    findings.push('riw611ayat diabetes kuat di keluarga');
+  } else if (answers['q4']?.includes('orangtua/saudara')) {
+    riskScore += 2;
+    findings.push('ada riwayat diabetes di keluarga dekat');
+  } else if (answers['q4']?.includes('keluarga jauh')) {
+    riskScore += 0.5; // Hanya sedikit
+  }
+  // "Tidak ada" = 0 poin
+  
+  // Q5: Tidur (HANYA hitung jika kurang)
+  if (answers['q5']?.includes('Kurang dari 5')) {
+    riskScore += 2;
+    findings.push('pola tidur yang sangat kurang');
+  } else if (answers['q5']?.includes('5-6 jam')) {
+    riskScore += 1;
+    findings.push('durasi tidur kurang optimal');
+  }
+  // "7-8 jam" atau ">8 jam" = 0 poin
+  
+  // Q6: Konsumsi manis (tingkatkan bobot)
+  if (answers['q6']?.includes('Setiap hari')) {
+    riskScore += 4;
+    findings.push('konsumsi makanan/minuman manis setiap hari');
+  } else if (answers['q6']?.includes('5-6x')) {
+    riskScore += 2;
+    findings.push('konsumsi makanan manis cukup sering');
+  } else if (answers['q6']?.includes('3-4x')) {
+    riskScore += 1;
+  }
+  // "Jarang (1-2x/minggu)" = 0 poin
+  
+  // Q7: Olahraga (HANYA hitung jika tidak pernah/jarang)
+  if (answers['q7']?.includes('Tidak pernah')) {
+    riskScore += 3;
+    findings.push('tidak ada aktivitas olahraga');
+  } else if (answers['q7']?.includes('1-2x')) {
+    riskScore += 1;
+  }
+  // "3-4x" atau "Hampir setiap hari" = 0 poin (BAGUS!)
+  
+  // Q8: Kelelahan
+  if (answers['q8']?.includes('Sangat sering')) {
+    riskScore += 3;
+    findings.push('kelelahan yang sangat sering');
+  } else if (answers['q8']?.includes('Sering')) {
+    riskScore += 1.5;
+  }
+  // "Jarang" atau "Tidak pernah" = 0 poin
+  
+  // Q9: Gula darah (SANGAT PENTING!)
+  const gulaAnswer = answers['q9']?.toLowerCase() || '';
+  const match = gulaAnswer.match(/\d+/);
+  if (match) {
+    const nilai = parseInt(match[0]);
+    if (nilai >= 200) {
+      riskScore += 10; // LANGSUNG RED
+      findings.push(`hasil gula darah ${nilai} mg/dL yang sangat tinggi`);
+    } else if (nilai >= 126) {
+      riskScore += 8; // PASTI RED
+      findings.push(`gula darah puasa ${nilai} mg/dL (diabetes)`);
+    } else if (nilai >= 100) {
+      riskScore += 3;
+      findings.push(`gula darah ${nilai} mg/dL (prediabetes)`);
+    }
+  }
+  
+  // Q10: Gejala komplikasi (SANGAT SERIUS!)
+  const gejala = answers['q10']?.toLowerCase() || '';
+  if (gejala.includes('luka') && gejala.includes('sembuh')) {
+    riskScore += 4;
+    findings.push('luka yang lambat sembuh');
+  }
+  if (gejala.includes('kabur') || gejala.includes('mata') || gejala.includes('penglihatan')) {
+    riskScore += 4;
+    findings.push('gangguan penglihatan');
+  }
+  if (gejala.includes('kesemutan') || gejala.includes('kebas')) {
+    riskScore += 4;
+    findings.push('kesemutan di kaki/tangan');
+  }
+  
+  // Tentukan status dengan threshold yang LEBIH KETAT
   let status, statusColor, risikoLevel, urgensi, ringkasan;
   
-  if (riskScore >= 5) {
+  if (riskScore >= 10) {
+    // RED: Gejala serius atau gula darah tinggi atau komplikasi
     status = 'Perlu Perhatian';
     statusColor = 'red';
     risikoLevel = 'Tinggi';
-    urgensi = 'Konsultasi segera';
-    ringkasan = `Berdasarkan BMI Anda (${bmi} - ${bmiCategory}) dan hasil analisis kuesioner, kondisi kesehatan Anda memerlukan perhatian serius. Anda memiliki beberapa faktor risiko diabetes yang signifikan. Sangat disarankan untuk segera berkonsultasi dengan dokter untuk pemeriksaan lebih lanjut termasuk tes gula darah puasa, HbA1c, dan pemeriksaan kesehatan menyeluruh. Deteksi dini dan penanganan tepat dapat mencegah komplikasi serius di masa depan.`;
-  } else if (riskScore >= 3) {
+    urgensi = 'Konsultasi segera ke dokter (1-3 hari)';
+    
+    const findingsText = findings.length > 0 ? findings.slice(0, 3).join(', ') : 'beberapa faktor risiko serius';
+    ringkasan = `Dari hasil analisis, saya menemukan ${findingsText}${findings.length > 3 ? ', dan beberapa faktor lainnya' : ''}. Kondisi ini memerlukan perhatian serius karena menunjukkan risiko tinggi diabetes atau kemungkinan Anda sudah mengalaminya. Saya sangat menyarankan untuk segera periksa ke dokter dalam 1-3 hari ke depan untuk tes gula darah puasa dan HbA1c. Deteksi dini sangat penting untuk mencegah komplikasi seperti kerusakan mata, ginjal, atau saraf. Jangan tunda karena diabetes yang tidak tertangani bisa berbahaya.`;
+    
+  } else if (riskScore >= 5) {
+    // YELLOW: Ada beberapa faktor risiko yang perlu diperhatikan
     status = 'Waspada';
     statusColor = 'yellow';
     risikoLevel = 'Sedang';
     urgensi = 'Konsultasi dalam 1-2 minggu';
-    ringkasan = `Berdasarkan BMI Anda (${bmi} - ${bmiCategory}) dan jawaban kuesioner, kondisi kesehatan Anda masuk kategori "Waspada" dengan tingkat risiko sedang. Terdapat ${riskScore} faktor risiko yang teridentifikasi yang dapat meningkatkan kemungkinan terkena diabetes di masa depan. ${
-      bmiValue >= 25 ? `BMI Anda berada di kategori ${bmiCategory}, yang merupakan salah satu faktor risiko utama.` : ''
-    } ${
-      diabetesSymptoms.length > 0 ? `Anda juga menunjukkan ${diabetesSymptoms.length} gejala yang perlu diperhatikan.` : ''
-    } Meskipun kondisi ini belum kritis, sangat penting untuk segera melakukan perubahan gaya hidup dan berkonsultasi dengan dokter dalam 1-2 minggu untuk pemeriksaan preventif. Dengan tindakan yang tepat sekarang, Anda dapat mencegah perkembangan ke kondisi yang lebih serius. Fokus pada penurunan berat badan bertahap, peningkatan aktivitas fisik, dan perbaikan pola makan akan sangat membantu menurunkan risiko Anda.`;
+    
+    const findingsText = findings.length > 0 ? findings.join(', ') : 'beberapa faktor risiko';
+    ringkasan = `Saya melihat ada ${findingsText} yang perlu Anda perhatikan. Meskipun kondisi Anda belum masuk kategori darurat, kombinasi faktor-faktor ini meningkatkan risiko diabetes di masa depan. Kabar baiknya, dengan perubahan gaya hidup yang tepat mulai sekarang, Anda bisa mencegahnya berkembang lebih jauh. Saya sarankan konsultasi ke dokter dalam 1-2 minggu untuk pemeriksaan gula darah dan mendapat panduan yang lebih spesifik. Fokuskan pada perbaikan pola makan, aktivitas fisik, dan kualitas tidur.`;
+    
   } else {
+    // GREEN: Kondisi baik, risiko rendah
     status = 'Baik';
     statusColor = 'green';
     risikoLevel = 'Rendah';
-    urgensi = 'Cek rutin 3-6 bulan';
-    ringkasan = `Berdasarkan BMI Anda (${bmi} - ${bmiCategory}) dan jawaban kuesioner, kondisi kesehatan Anda dalam kategori "Baik" dengan tingkat risiko rendah. Anda telah menunjukkan pola hidup yang cukup sehat. Pertahankan gaya hidup sehat Anda dengan terus berolahraga, mengonsumsi makanan bergizi, dan melakukan pemeriksaan kesehatan rutin setiap 3-6 bulan untuk memastikan kondisi Anda tetap optimal. Tetap waspada terhadap perubahan kondisi kesehatan dan konsultasikan dengan dokter jika ada keluhan.`;
+    urgensi = 'Pemeriksaan rutin 6-12 bulan';
+    
+    if (findings.length > 0) {
+      ringkasan = `Secara keseluruhan, kondisi kesehatan Anda cukup baik dengan risiko diabetes yang rendah. Memang ada ${findings.join(', ')}, tapi ini masih dalam batas yang bisa dikelola dengan baik. Yang penting sekarang adalah mempertahankan gaya hidup sehat yang sudah Anda jalani. Tetap rutin berolahraga, jaga pola makan bergizi, dan tidur cukup. Jangan lupa lakukan pemeriksaan kesehatan termasuk cek gula darah setiap 6-12 bulan untuk memastikan semuanya tetap aman.`;
+    } else {
+      ringkasan = `Kabar baik! Kondisi kesehatan Anda sangat baik dengan risiko diabetes yang rendah. Pola makan Anda teratur, aktivitas fisik cukup, dan tidak ada gejala yang mengkhawatirkan. Pertahankan gaya hidup sehat ini - Anda sudah melakukan banyak hal dengan benar. Tetap jaga pola makan bergizi, olahraga teratur, dan tidur cukup. Lakukan pemeriksaan kesehatan rutin setiap 6-12 bulan sebagai langkah preventif. Terus pertahankan kebiasaan baik Anda!`;
+    }
   }
+  
+  // Rekomendasi dinamis
+  const rekomendasi = [];
+  
+  if (bmiValue >= 25) {
+    const target = (bmiValue * 0.05).toFixed(1);
+    rekomendasi.push(`Turunkan berat badan bertahap target 5-10% (sekitar ${target} kg) dalam 3-6 bulan`);
+  }
+  
+  if (answers['q6']?.includes('Setiap hari') || answers['q6']?.includes('5-6x')) {
+    rekomendasi.push('Kurangi drastis konsumsi makanan/minuman manis - ini prioritas utama untuk Anda');
+  }
+  
+  if (answers['q7']?.includes('Tidak pernah')) {
+    rekomendasi.push('Mulai olahraga ringan: jalan kaki 15-20 menit setiap hari, tingkatkan bertahap');
+  } else if (answers['q7']?.includes('1-2x')) {
+    rekomendasi.push('Tingkatkan frekuensi olahraga menjadi minimal 4-5x per minggu');
+  }
+  
+  if (answers['q5']?.includes('Kurang dari 5') || answers['q5']?.includes('5-6 jam')) {
+    rekomendasi.push('Perbaiki kualitas tidur - targetkan 7-8 jam per malam dengan jadwal konsisten');
+  }
+  
+  if (riskScore >= 4) {
+    rekomendasi.push('Lakukan pemeriksaan gula darah puasa dan HbA1c di laboratorium');
+  }
+  
+  if (answers['q2']?.includes('Sering') || answers['q3']?.includes('10-12')) {
+    rekomendasi.push('Gejala haus & sering BAK yang Anda alami perlu diperiksa dokter segera');
+  }
+  
+  rekomendasi.push('Monitor berat badan dan lingkar pinggang secara rutin');
+  rekomendasi.push('Perbanyak minum air putih 8-10 gelas per hari');
+  rekomendasi.push('Kelola stres dengan baik - yoga, meditasi, atau hobi yang Anda suka');
+  rekomendasi.push('Catat pola makan dan aktivitas harian untuk evaluasi');
+  
+  // Diet tips
+  const dietTips = [
+    'Gunakan piring gizi seimbang: ½ sayur, ¼ protein, ¼ karbohidrat',
+    'Pilih nasi merah, oat, atau quinoa sebagai pengganti nasi putih',
+    'Protein setiap makan: ikan, ayam, telur, tempe, tahu',
+    'Perbanyak sayur hijau: bayam, brokoli, kangkung minimal 3 porsi/hari',
+    'Buah indeks glikemik rendah: apel, pir, jambu biji, stroberi',
+    'Hindari minuman manis kemasan, soda, dan jus dengan gula tambahan',
+    'Gunakan minyak zaitun untuk memasak, konsumsi kacang-kacangan',
+    'Batasi gorengan dan makanan tinggi lemak jenuh',
+  ];
+  
+  // Lifestyle tips
+  const lifestyleTips = [
+    'Jalan cepat atau jogging 30 menit, 5x seminggu',
+    'Latihan kekuatan 2-3x/minggu: push up, squat, plank',
+    'Tidur dan bangun di jam yang sama setiap hari',
+    'Hindari gadget 1 jam sebelum tidur',
+    'Bergerak setiap 30 menit jika kerja duduk',
+    'Luangkan waktu untuk relaksasi dan hobi',
+    'Berhenti merokok dan batasi alkohol',
+    'Jaga hidrasi sepanjang hari',
+  ];
 
   return {
     status,
     statusColor,
     ringkasan,
     risikoLevel,
-    rekomendasi: [
-      bmiValue >= 25 ? 'Turunkan berat badan secara bertahap dengan target 5-10% dari berat saat ini' : 'Pertahankan berat badan ideal dengan monitor rutin',
-      'Kurangi konsumsi makanan dan minuman manis, termasuk soda, jus kemasan, dan kue',
-      'Tingkatkan aktivitas fisik minimal 150 menit per minggu atau 30 menit per hari',
-      'Monitor kadar gula darah secara berkala setiap 3-6 bulan',
-      'Konsumsi makanan bergizi seimbang dengan porsi terkontrol menggunakan piring gizi seimbang',
-      'Perbanyak minum air putih minimal 8 gelas per hari',
-      'Kelola stres dengan baik melalui meditasi, yoga, atau hobi yang menyenangkan',
-      'Tidur cukup dan berkualitas 7-8 jam setiap malam',
-      riskScore >= 3 ? 'Lakukan pemeriksaan HbA1c dan gula darah puasa di laboratorium' : 'Jaga konsistensi pola hidup sehat',
-    ],
+    rekomendasi,
     urgensi,
-    dietTips: [
-      'Pilih karbohidrat kompleks: nasi merah, oat, quinoa, ubi, singkong rebus',
-      'Tingkatkan asupan protein berkualitas: ikan (salmon, tuna, makarel), ayam tanpa kulit, telur, tempe, tahu',
-      'Perbanyak serat dari sayuran hijau (bayam, kangkung, brokoli) dan buah indeks glikemik rendah (apel, pir, jambu)',
-      'Batasi gula tambahan maksimal 4 sendok makan (50g) per hari dari semua sumber',
-      'Gunakan lemak sehat: minyak zaitun, alpukat, kacang-kacangan, biji-bijian',
-      'Terapkan metode piring: 1/2 sayur, 1/4 protein, 1/4 karbohidrat',
-      'Hindari gorengan dan makanan tinggi lemak jenuh',
-      'Kurangi konsumsi garam maksimal 1 sendok teh (5g) per hari',
-    ],
-    lifestyleTips: [
-      'Olahraga aerobik 30 menit (jalan cepat, jogging, bersepeda, berenang), minimal 5 kali seminggu',
-      'Tambahkan latihan kekuatan (push up, squat, angkat beban ringan) 2-3 kali per minggu',
-      'Tidur cukup 7-8 jam setiap malam dengan jadwal tidur yang konsisten',
-      'Kelola stres dengan teknik relaksasi: meditasi 10 menit per hari, pernapasan dalam, atau yoga',
-      'Hindari duduk terlalu lama, bergerak setiap 30 menit jika pekerjaan kantoran',
-      'Berhenti merokok dan batasi konsumsi alkohol',
-      'Jaga hidrasi dengan minum air putih 2-2.5 liter per hari',
-    ],
+    dietTips,
+    lifestyleTips,
   };
 };

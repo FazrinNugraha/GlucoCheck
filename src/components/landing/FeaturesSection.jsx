@@ -66,7 +66,7 @@ const FeaturesSection = () => {
             Kenapa Memilih GlucoCheck?
           </h2>
           <p className="text-muted-foreground text-lg">
-            Platform Kami memberikan pengalaman cek kesehatan dengan cepat, gratis, informatif
+            Platform Kami memberikan pengalaman cek kesehatan risiko diabetes dengan cepat, gratis, informatif
             berbasis teknologi AI terkini.
           </p>
         </motion.div>

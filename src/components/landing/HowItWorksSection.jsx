@@ -1,161 +1,105 @@
-import { UserCircle, FileQuestion, PieChart, HeartPulse } from "lucide-react";
+import { UserCircle, FileQuestion, PieChart, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-const steps = [
-  {
-    icon: UserCircle,
-    step: "01",
-    title: "Isi Data Pribadi",
-    description:
-      "Masukkan informasi dasar seperti usia, berat badan, dan tinggi badan Anda.",
-  },
-  {
-    icon: FileQuestion,
-    step: "02",
-    title: "Jawab Pertanyaan",
-    description:
-      "Jawab beberapa pertanyaan singkat tentang gaya hidup dan riwayat kesehatan.",
-  },
-  {
-    icon: PieChart,
-    step: "03",
-    title: "Hasil Analisis",
-    description:
-      "Dapatkan hasil analisis risiko diabetes Anda secara instan.",
-  },
-  {
-    icon: HeartPulse,
-    step: "04",
-    title: "Saran Kesehatan",
-    description:
-      "Ikuti rekomendasi kesehatan untuk menjaga gula darah tetap stabil.",
-  },
-];
-
-// container buat stagger
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-// item animation
-const itemVariants = {
+const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 const HowItWorksSection = () => {
   return (
-    <section id="how-it-works" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section id="how-it-works" className="py-20 md:py-32 bg-white">
+      <div className="container mx-auto px-6 lg:px-8 max-w-6xl">
+        
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-6 md:gap-10 mb-12 md:mb-16">
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            className="w-full lg:w-1/2 text-center lg:text-left"
+          >
+            <span className="text-xs font-bold text-[#A855F7] uppercase tracking-wider mb-3 md:mb-4 block">
+              CARA KERJA
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1A0B2E] tracking-tight leading-tight">
+              Langkah mudah, <br className="hidden md:block" /> hasil akurat
+            </h2>
+          </motion.div>
+          
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            className="w-full lg:w-5/12 pt-0 lg:pt-4 text-center lg:text-left"
+          >
+            <p className="text-gray-500 text-base md:text-lg leading-relaxed">
+              GlucoCheck memproses data kesehatan dasar Anda dengan algoritma terstruktur untuk memberikan insight risiko secara efisien dan aman.
+            </p>
+          </motion.div>
+        </div>
 
-        {/* HEADER */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Cara Kerja
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-3 mb-4">
-            4 Langkah Mudah
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Proses yang simpel untuk membantu Anda memahami kondisi kesehatan.
-          </p>
-        </motion.div>
-
-        {/* STEPS */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          {steps.map((item, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className="relative group"
-            >
-              {/* Connector line */}
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-10 left-[60%] w-full h-0.5 bg-[#b7b7b7]" />
-              )}
-
-              <div className="relative z-10 text-center">
-                {/* Icon */}
-                <div className="relative w-20 h-20 mx-auto mb-6">
-                  {/* Pulse background */}
-                  <div
-                    className="
-                      absolute inset-0 rounded-full 
-                      bg-purple-400 opacity-20
-                      transition-all duration-300
-                      group-hover:opacity-40
-                      group-hover:scale-110
-                    "
-                  />
-
-                  {/* Icon circle */}
-                  <div
-                    className="
-                      relative w-20 h-20 rounded-full 
-                      bg-white border-2 border-[#e79aff]
-                      flex items-center justify-center
-                      transition-all duration-300 ease-out
-                      group-hover:scale-110
-                      group-hover:shadow-[0_0_25px_rgba(231,154,255,0.6)]
-                    "
-                  >
-                    <item.icon
-                      className="
-                        w-8 h-8 text-[#e79aff]
-                        transition-all duration-300
-                        group-hover:rotate-12
-                        group-hover:scale-110
-                      "
-                    />
-                  </div>
-
-                  {/* Step number */}
-                  <div
-                    className="
-                      absolute -top-2 -right-2 w-8 h-8 rounded-full 
-                      bg-[#e79aff] flex items-center justify-center
-                      transition-transform duration-300
-                      group-hover:scale-110
-                    "
-                  >
-                    <span className="text-white text-xs font-bold">
-                      {item.step}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Text */}
-                <h3 className="text-xl font-bold text-foreground mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {item.description}
-                </p>
+        {/* Cards Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          
+          {/* Card 1 */}
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.1 }} variants={fadeUp}
+            className="bg-white border border-gray-100 p-8 md:p-10 flex flex-col h-full rounded-2xl md:rounded-sm shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="mb-8 md:mb-12">
+              <UserCircle className="w-10 h-10 md:w-12 md:h-12 text-[#1A0B2E]" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-lg md:text-xl font-bold text-[#1A0B2E] mb-3 md:mb-4">Isi Data Pribadi</h3>
+            <p className="text-gray-500 text-sm leading-relaxed mb-10 md:mb-16">
+              Masukkan informasi dasar usia dan ukuran tubuh Anda tanpa perlu melakukan registrasi akun yang rumit.
+            </p>
+            <div className="mt-auto">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                <ArrowUpRight className="w-4 h-4 text-[#1A0B2E]" />
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Card 2 */}
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }} variants={fadeUp}
+            className="bg-white border border-gray-100 p-8 md:p-10 flex flex-col h-full rounded-2xl md:rounded-sm shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="mb-8 md:mb-12">
+              <FileQuestion className="w-10 h-10 md:w-12 md:h-12 text-[#1A0B2E]" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-lg md:text-xl font-bold text-[#1A0B2E] mb-3 md:mb-4">Jawab Kuesioner</h3>
+            <p className="text-gray-500 text-sm leading-relaxed mb-10 md:mb-16">
+              Luangkan 2 menit menjawab pertanyaan sederhana seputar gaya hidup dan riwayat kesehatan untuk prediksi yang lebih presisi.
+            </p>
+            <div className="mt-auto">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                <ArrowUpRight className="w-4 h-4 text-[#1A0B2E]" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Card 3 (Highlighted) */}
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.3 }} variants={fadeUp}
+            className="bg-[#F4EBFF] p-8 md:p-10 flex flex-col h-full sm:col-span-2 lg:col-span-1 rounded-2xl md:rounded-sm md:rounded-tr-[5rem] shadow-sm"
+          >
+            <div className="mb-8 md:mb-12">
+              <div className="w-10 h-10 md:w-12 md:h-12 relative">
+                <div className="absolute inset-0 border border-[#1A0B2E] rounded-full"></div>
+                <div className="absolute inset-1 border border-[#1A0B2E] rounded-full translate-x-1 translate-y-1"></div>
+                <PieChart className="absolute inset-0 m-auto w-5 h-5 md:w-6 md:h-6 text-[#1A0B2E]" strokeWidth={1.5} />
+              </div>
+            </div>
+            <h3 className="text-lg md:text-xl font-bold text-[#1A0B2E] mb-3 md:mb-4">Hasil Instan</h3>
+            <p className="text-[#2D1B4E]/80 text-sm leading-relaxed mb-10 md:mb-16">
+              Hasil analisis risiko muncul secara instan beserta saran dan rekomendasi spesifik untuk pencegahan sedini mungkin.
+            </p>
+            <div className="mt-auto">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#1A0B2E] flex items-center justify-center hover:bg-[#2D1B4E] transition-colors cursor-pointer">
+                <ArrowUpRight className="w-4 h-4 text-white" />
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
       </div>
     </section>
   );

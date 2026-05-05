@@ -16,17 +16,17 @@ const ResultCard = ({ result, userName, userAge }) => {
 
   return (
     <>
-      <div className="flex items-center gap-2 text-blue-600 mb-4">
+      <div className="flex items-center gap-2 text-[#9D4EDD] mb-4">
         <CheckCircle className="w-5 h-5" />
         <span className="text-sm font-medium">Analisis Selesai</span>
       </div>
 
-      <h2 className="text-3xl font-bold text-gray-800 mb-2">Hasil Analisis Anda</h2>
+      <h2 className="text-3xl font-bold text-[#2D1B4E] mb-2">Hasil Analisis Anda</h2>
       <p className="text-gray-600 mb-6">
         Berdasarkan data yang Anda berikan: <strong>{userName}</strong>, {userAge} tahun
       </p>
 
-      <div className={`border-2 rounded-xl p-6 mb-6 ${statusColors[result.statusColor]}`}>
+      <div className={`border-2 rounded-lg p-6 mb-6 ${statusColors[result.statusColor]}`}>
         <div className="flex items-center gap-3 mb-3">
           {statusIcons[result.statusColor]}
           <div>
@@ -38,31 +38,31 @@ const ResultCard = ({ result, userName, userAge }) => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div className="border border-gray-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-blue-600" />
+        <div className="border border-gray-200 rounded-lg p-6">
+          <h3 className="font-bold text-[#2D1B4E] mb-4 flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-[#9D4EDD]" />
             Rekomendasi Perawatan
           </h3>
           <ul className="space-y-3">
             {result.rekomendasi.map((item, index) => (
               <li key={index} className="flex gap-3">
-                <span className="text-blue-600 font-semibold shrink-0">{index + 1}.</span>
+                <span className="text-[#9D4EDD] font-semibold shrink-0">{index + 1}.</span>
                 <span className="text-gray-700">{item}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="border border-gray-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-600" />
+        <div className="border border-gray-200 rounded-lg p-6">
+          <h3 className="font-bold text-[#2D1B4E] mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-[#9D4EDD]" />
             Tingkat Urgensi
           </h3>
-          <div className="bg-blue-50 rounded-lg p-4 mb-4">
-            <p className="text-blue-900 font-semibold text-lg">{result.urgensi}</p>
+          <div className="bg-purple-50 rounded-lg p-4 mb-4">
+            <p className="text-[#2D1B4E] font-semibold text-lg">{result.urgensi}</p>
           </div>
 
-          <h4 className="font-semibold text-gray-800 mb-3">Tips Diet:</h4>
+          <h4 className="font-semibold text-[#2D1B4E] mb-3">Tips Diet:</h4>
           <ul className="space-y-2">
             {result.dietTips.map((tip, index) => (
               <li key={index} className="flex gap-2">
@@ -74,12 +74,12 @@ const ResultCard = ({ result, userName, userAge }) => {
         </div>
       </div>
 
-      <div className="bg-linear-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6">
-        <h3 className="font-bold text-gray-800 mb-3">Tips Gaya Hidup Sehat</h3>
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+        <h3 className="font-bold text-[#2D1B4E] mb-3">Tips Gaya Hidup Sehat</h3>
         <div className="space-y-2">
           {result.lifestyleTips.map((tip, index) => (
             <div key={index} className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-[#9D4EDD] rounded-full flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">{index + 1}</span>
               </div>
               <p className="text-gray-700">{tip}</p>

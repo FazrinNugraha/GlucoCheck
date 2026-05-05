@@ -1,54 +1,66 @@
 import React from "react";
-import { ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 
 const QuestionCard = ({ question, index, value, onChange }) => {
   return (
-    <div className="border border-gray-200 rounded-xl p-5 bg-blue-50/50 shadow-sm space-y-4">
-      <label className="block text-sm font-semibold text-gray-800 mb-3">
+    <div className="space-y-6">
+      <label className="block text-xl font-bold text-[#2D1B4E] mb-6">
         {index + 1}. {question.question}
       </label>
 
-      {/* SELECT */}
+      {/* RADIO BUTTON CARDS */}
       {question.type === "select" && (
-        <div className="relative">
-          <select
-            value={value || ""}
-            onChange={(e) => onChange(question.id, e.target.value)}
-            className={`
-              w-full appearance-none
-              px-4 py-3 pr-10
-              rounded-lg
-              border
-              bg-white
-              text-gray-800
-              shadow-sm
-              transition-all duration-200
-              focus:outline-none
-              focus:ring-2 focus:ring-blue-500
-              focus:border-blue-500
-              hover:border-blue-400
-              ${!value ? "text-gray-400" : "text-gray-800"}
-            `}
-          >
-            <option value="" disabled>
-              Pilih jawaban...
-            </option>
-            {question.options.map((option) => (
-              <option key={option} value={option} className="text-gray-800">
-                {option}
-              </option>
-            ))}
-          </select>
+        <div className="space-y-3">
+          {question.options.map((option) => {
+            const isSelected = value === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => onChange(question.id, option)}
+                className={`
+                  w-full text-left px-5 py-4 rounded-lg
+                  border-2 transition-all duration-200
+                  flex items-center justify-between
+                  group hover:shadow-md
+                  ${
+                    isSelected
+                      ? "border-[#9D4EDD] bg-purple-50 shadow-md"
+                      : "border-gray-200 bg-white hover:border-[#9D4EDD]/50"
+                  }
+                `}
+              >
+                <span
+                  className={`
+                    font-medium text-base
+                    ${isSelected ? "text-[#2D1B4E]" : "text-gray-700"}
+                  `}
+                >
+                  {option}
+                </span>
 
-          {/* Chevron Icon */}
-          <ChevronDown
-            className="
-              absolute right-3 top-1/2 -translate-y-1/2
-              w-5 h-5
-              text-gray-400
-              pointer-events-none
-            "
-          />
+                {/* Check Icon */}
+                <div
+                  className={`
+                    w-6 h-6 rounded-full flex items-center justify-center
+                    transition-all duration-200
+                    ${
+                      isSelected
+                        ? "bg-[#9D4EDD] scale-100"
+                        : "bg-gray-200 scale-0 group-hover:scale-100"
+                    }
+                  `}
+                >
+                  <Check
+                    className={`
+                      w-4 h-4
+                      ${isSelected ? "text-white" : "text-gray-400"}
+                    `}
+                  />
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -60,11 +72,13 @@ const QuestionCard = ({ question, index, value, onChange }) => {
           onChange={(e) => onChange(question.id, e.target.value)}
           placeholder={question.placeholder}
           className="
-            w-full px-4 py-3
+            w-full px-5 py-4
             rounded-lg
-            border border-gray-300
-            focus:ring-2 focus:ring-blue-500
-            focus:border-transparent
+            border-2 border-gray-200
+            focus:ring-2 focus:ring-[#9D4EDD]
+            focus:border-[#9D4EDD]
+            transition-all duration-200
+            text-base
           "
         />
       )}
@@ -75,13 +89,16 @@ const QuestionCard = ({ question, index, value, onChange }) => {
           value={value || ""}
           onChange={(e) => onChange(question.id, e.target.value)}
           placeholder={question.placeholder}
-          rows={3}
+          rows={4}
           className="
-            w-full px-4 py-3
+            w-full px-5 py-4
             rounded-lg
-            border border-gray-300
-            focus:ring-2 focus:ring-blue-500
-            focus:border-transparent
+            border-2 border-gray-200
+            focus:ring-2 focus:ring-[#9D4EDD]
+            focus:border-[#9D4EDD]
+            transition-all duration-200
+            text-base
+            resize-none
           "
         />
       )}

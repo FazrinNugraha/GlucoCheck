@@ -17,7 +17,7 @@ const ProgressBar = ({ currentStep, totalSteps = 3 }) => {
         
         {/* Progress line */}
         <div 
-          className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2 z-0 transition-all duration-300"
+          className="absolute top-1/2 left-0 h-1 bg-[#9D4EDD] -translate-y-1/2 z-0 transition-all duration-300"
           style={{ 
             width: currentStep === 1 ? '0%' : currentStep === 2 ? '50%' : '100%'
           }}
@@ -38,7 +38,7 @@ const ProgressBar = ({ currentStep, totalSteps = 3 }) => {
                 className={`
                   w-12 h-12 rounded-full flex items-center justify-center
                   transition-all duration-300
-                  ${isCompleted || isCurrent ? 'bg-blue-500' : 'bg-gray-200'}
+                  ${isCompleted || isCurrent ? 'bg-[#9D4EDD]' : 'bg-gray-200'}
                 `}
               >
                 <StepIcon 

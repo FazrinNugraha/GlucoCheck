@@ -17,11 +17,11 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-cyan-50 p-4">
+    <div className="min-h-screen bg-slate-50 p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-12">
         <Header showDiagnosisButton onNewDiagnosis={handleNewDiagnosis} />
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8 mb-6">
           <ResultCard
             result={result}
             userName={formData.name}
@@ -34,7 +34,7 @@ const Results = () => {
         <div className="mt-8 text-center">
           <button
             onClick={handleNewDiagnosis}
-            className="bg-linear-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold px-8 py-4 rounded-lg transition-colors"
+            className="bg-[#9D4EDD] hover:bg-[#853bbf] text-white font-semibold px-8 py-4 rounded-md transition-colors"
           >
             Mulai Diagnosis Baru
           </button>
